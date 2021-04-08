@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>BackToTop</title>
+  <style>
+    body {
+      height: 3000px;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    function getScrollPosition() {
+      const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+      console.log('滚动条位置：' + scrollTop);
+    }
+    
+    window.onscroll = getScrollPosition;
+  </script>
+</body>
+
+</html>

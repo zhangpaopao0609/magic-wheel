@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>BackToTop</title>
+  <style>
+    body {
+      height: 3000px;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    function getScrollPosition() {
+      const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+      console.log('滚动条位置：' + scrollTop);
+    };
+    /**
+     * 节流函数
+     * @param {*} fn 需要执行的事件（操作）
+     * @param {*} time 每隔 time 这段时间都需要执行一次
+     */
+    function throttleTimeStamp(fn, time) {
+      let notYet = Date.now();
+      return function() {
+        let now = Date.now();
+        if(notYet + time > now ) {            // 时间未到，直接什么也不做
+          return;
+        }else {                 // 时间到了（也就是上一个定制器执行了），该去启动下一个定制器了
+          notYet = now;        
+          fn();
+        }
+      }
+    }
+    
+    window.onscroll = throttleTimeStamp(getScrollPosition, 2000);
+  </script>
+</body>
+
+</html>
