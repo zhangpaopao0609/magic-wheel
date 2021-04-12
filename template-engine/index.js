@@ -1,4 +1,4 @@
-let templateStr = "{% if(isShow) { %} <b>{{ name }}</b> {% }else{ %} isShow is false {% } %} {% arr.forEach(item => { %} 11 {% }) %}"
+let templateStr = "{% if(isShow) { %} <b>{{ name }}</b> {% }else{ %} isShow is false {% } %} {% arr.forEach(item => { %} <div>{{ item }}</div> {% }) %}"
 
 
 // 解析 {{  }}  对应的正则
@@ -8,9 +8,6 @@ templateStr = templateStr.replace(reMustache,  ($0, $1) => {
   return "${" + $1.trim() + "}";
 });
 
-let head = `let str = ''\nwith(obj){\n`;
-head += "str += `";
-
 // 解析 {% %} 对应的正则
 const reJsScript = /\{\%([^%]+)\%\}/g;
 // 首先直接获取到对应的js语句
@@ -19,13 +16,15 @@ templateStr = templateStr.replace(reJsScript, ($0, $1) => {
   return "`\n"+$1.trim()+"\nstr+=`";
 });
 
-let tail = "`\n}\nreturn str;";
+const head = "let str = ''\nwith(obj){\nstr += `";
+const tail = "`\n}\nreturn str;";
+const generatorStr = head + templateStr + tail;
+console.log(generatorStr);
+const generator =  new Function("obj", generatorStr);
 
-console.log(head + template + tail);
-
-// const fn =  new Function("obj", head + template + tail);
-// const res = fn({isShow: true, name: 'arrow', arr: [1]});
-// // console.log(res);
-
-
-
+const res1 = generator({isShow: true, name: 'arrow', arr: [1, 2]});
+console.log(res1);
+// <b>arrow</b>   <div>1</div>  <div>2</div>
+const res2 = generator({isShow: false, name: 'arrow', arr: [3, 4]});
+console.log(res2);
+// isShow is false   <div>3</div>  <div>4</div>
