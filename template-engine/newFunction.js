@@ -1,6 +1,6 @@
 const str = "let str = ''; with(obj) {str += n;} return str"
 const fn = new Function("obj", str);
-console.log(fn)
+console.log(fn.toString())
 
 // ƒ anonymous(obj) {
 //   let str = ''; 
