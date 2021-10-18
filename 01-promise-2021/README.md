@@ -517,7 +517,9 @@ Promises/A+ 规范[对应的 git 仓库](https://github.com/promises-aplus)中�
 
 `promises-aplus-tests` 共有 872 个测试用例，本文实现的 `FullPromise` 全部通过。
 
-![image-20211018143803750](./img/test-pass.png)
+<div align='center'>
+  <img src='./img/test-pass.png' style='width:100%' zoom='100%'/>
+</div>
 
 ## 3. 优化
 
