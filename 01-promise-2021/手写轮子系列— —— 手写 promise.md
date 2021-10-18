@@ -476,9 +476,9 @@ Promises/A+ 规范[对应的 git 仓库](https://github.com/promises-aplus)中�
 
 2. 在 package.json 中添加脚本
 
-   ```
+   ```bash
    "scripts": {
-   		"test": "promises-aplus-tests 填写测试文件地址"  // 如 ./src/testFullPromise.js
+   	"test": "promises-aplus-tests 填写测试文件地址"  // 如 ./src/testFullPromise.js
    },
    ```
 

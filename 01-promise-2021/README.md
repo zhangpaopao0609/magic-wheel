@@ -6,13 +6,13 @@ Promise 是 JS 异步编程的一种解决方案，比传统的解决方案—�
 
 所谓 Promise，简单说就是一个容器，里面保存着某个未来才会结束的事件（通常是一个异步操作）的结果。可以说Promise 的出现完美的解决了回调地狱, 有了 Promise 对象，就可以将异步操作以同步操作的流程表达出来，避免了层层嵌套的回调函数。此外，Promise 对象提供统一的接口，使得控制异步操作更加容易。
 
-那么如何自己手动地来实现一个 Promise 呢？咋一看可能无从下手，但只要我们跟随着 [Promises/A+ 规范（中文翻译）](https://blog.csdn.net/qq_41800366/article/details/120788569) 一步一步地实现，你会发现，原来实现一个 Promise 是如此的简单。<font color='red'>**强烈建议在看本文之前先大致浏览一遍 [Promises/A+ 规范（中文翻译）](https://blog.csdn.net/qq_41800366/article/details/120788569)，看完后再来阅读本文一定会让你有恍然大悟的感觉** </font>
+那么如何自己手动地来实现一个 Promise 呢？咋一看可能无从下手，但只要我们跟随着 [Promises/A+ 规范（中文翻译）](https://blog.csdn.net/qq_41800366/article/details/120788569) 一步一步地实现，你会发现，原来实现一个 Promise 是如此的简单。<font style='color: red' color='red'>**强烈建议在看本文之前先大致浏览一遍 [Promises/A+ 规范（中文翻译）](https://blog.csdn.net/qq_41800366/article/details/120788569)，看完后再来阅读本文一定会让你有恍然大悟的感觉** </font>
 
 ## 1. Promises/A+ 规范
 
 promise 的概念最早由社区提出，提出的规范很多，其中普遍接受的是由 commonjs 社区就提出的 [Promises/A](http://wiki.commonjs.org/wiki/Promises/A) 规范。但是这一规范仍然存在一些不足，因此后来社区基于这一规范提出了 plus 规范，即  [Promises/A+ 规范（中文翻译）](https://blog.csdn.net/qq_41800366/article/details/120788569)，这一规范得到了社区的一致认可，ES6 中的 promise 便是基于此规范为标准实现的，除此之外，ES6 还添加了规范中未提及的一些方法，如： `Promise.resolve, Promise.reject, Promise.all, Promise.race, promise.catch`。
 
-> 这里区分了大小写，大写为 Promise 的静态方法，小写为 Promise 的实例方法；<font color='red'>下文也同样，promise 代表实例</font>
+> 这里区分了大小写，大写为 Promise 的静态方法，小写为 Promise 的实例方法；<font style='color: red' color='red'>下文也同样，promise 代表实例</font>
 
 本次手写 Promise 仅仅实现  Promises/A+ 规范中提及的方法， ES6 中实现的其它方法暂不实现（但实现方法也很简单，[可在本仓库中查看源码](https://github.com/Ardor-Zhang/magic-wheel/blob/main/01-promise-2021/src/ES6Promise.js)）。
 
@@ -476,9 +476,9 @@ Promises/A+ 规范[对应的 git 仓库](https://github.com/promises-aplus)中�
 
 2. 在 package.json 中添加脚本
 
-   ```
+   ```bash
    "scripts": {
-   		"test": "promises-aplus-tests 填写测试文件地址"  // 如 ./src/testFullPromise.js
+   	"test": "promises-aplus-tests 填写测试文件地址"  // 如 ./src/testFullPromise.js
    },
    ```
 
@@ -517,7 +517,9 @@ Promises/A+ 规范[对应的 git 仓库](https://github.com/promises-aplus)中�
 
 `promises-aplus-tests` 共有 872 个测试用例，本文实现的 `FullPromise` 全部通过。
 
-![image-20211018143803750](./img/test-pass.png)
+<div align='center'>
+  <img src='./img/test-pass.png' />
+</div>
 
 ## 3. 优化
 
