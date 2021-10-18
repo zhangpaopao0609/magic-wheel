@@ -1,0 +1,19 @@
+{
+  "name": "promise",
+  "version": "1.0.0",
+  "description": "手写一个完整的 Promise",
+  "main": "./src/FullPromise.js",
+  "scripts": {
+    "testFullPromise": "promises-aplus-tests ./src/test/testFullPromise.js",
+    "testFullPromisePerfect": "promises-aplus-tests ./src/test/testFullPromisePerfect.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "promises-aplus-tests": "^2.1.2"
+  },
+  "dependencies": {
+    "pubsub-js": "^1.9.3"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "03-template-engine",
+  "version": "1.0.0",
+  "description": "手写轮子系列三——手写模板引擎",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "watch": "jest --watchAll",
+    "coverage": "jest --coverage"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jest": "^26.6.3"
+  }
+}
