@@ -14,7 +14,7 @@ promise 的概念最早由社区提出，提出的规范很多，其中普遍接
 
 > 这里区分了大小写，大写为 Promise 的静态方法，小写为 Promise 的实例方法；<font color='red'>下文也同样，promise 代表实例</font>
 
-本次手写 Promise 仅仅实现  Promises/A+ 规范中提及的方法， ES6 中实现的其它方法暂不实现（但实现方法也很简单，可在本仓库中查看源码）。
+本次手写 Promise 仅仅实现  Promises/A+ 规范中提及的方法， ES6 中实现的其它方法暂不实现（但实现方法也很简单，[可在本仓库中查看源码](https://github.com/Ardor-Zhang/magic-wheel/blob/main/01-promise-2021/src/ES6Promise.js)）。
 
 ## 2. 手摸手实现 Promise
 
@@ -614,6 +614,7 @@ class FullPromisePerfect {
 
 ## 5. 附上所有代码
 
-1. [点击查看实现步骤的代码]()
-2. [点击查看优化步骤的代码]()
-3. [点击查看ES6 Promise 的代码]()
+1. [点击查看实现步骤的代码](https://github.com/Ardor-Zhang/magic-wheel/tree/main/01-promise-2021/src/implementation-steps)
+2. [点击查看优化步骤的代码](https://github.com/Ardor-Zhang/magic-wheel/tree/main/01-promise-2021/src/optimization-steps)
+3. [点击查看 FullPromisePerfect 的代码](https://github.com/Ardor-Zhang/magic-wheel/blob/main/01-promise-2021/src/FullPromisePerfect.js)
+4. [点击查看ES6 Promise 的代码](https://github.com/Ardor-Zhang/magic-wheel/blob/main/01-promise-2021/src/ES6Promise.js)
