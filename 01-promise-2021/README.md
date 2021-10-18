@@ -6,7 +6,7 @@ Promise 是 JS 异步编程的一种解决方案，比传统的解决方案—�
 
 所谓 Promise，简单说就是一个容器，里面保存着某个未来才会结束的事件（通常是一个异步操作）的结果。可以说Promise 的出现完美的解决了回调地狱, 有了 Promise 对象，就可以将异步操作以同步操作的流程表达出来，避免了层层嵌套的回调函数。此外，Promise 对象提供统一的接口，使得控制异步操作更加容易。
 
-那么如何自己手动地来实现一个 Promise 呢？咋一看可能无从下手，但只要我们跟随着 [Promises/A+ 规范（中文翻译）](https://blog.csdn.net/qq_41800366/article/details/120788569) 一步一步地实现，你会发现，原来实现一个 Promise 是如此的简单。
+那么如何自己手动地来实现一个 Promise 呢？咋一看可能无从下手，但只要我们跟随着 [Promises/A+ 规范（中文翻译）](https://blog.csdn.net/qq_41800366/article/details/120788569) 一步一步地实现，你会发现，原来实现一个 Promise 是如此的简单。<font color='red'>**强烈建议在看本文之前先大致浏览一遍 [Promises/A+ 规范（中文翻译）](https://blog.csdn.net/qq_41800366/article/details/120788569)，看完后再来阅读本文一定会让你有恍然大悟的感觉** </font>
 
 ## 1. Promises/A+ 规范
 
@@ -517,9 +517,7 @@ Promises/A+ 规范[对应的 git 仓库](https://github.com/promises-aplus)中�
 
 `promises-aplus-tests` 共有 872 个测试用例，本文实现的 `FullPromise` 全部通过。
 
-<div align='center'>
-  <img src='./img/test-pass.png'/>
-</div>
+![image-20211018143803750](./img/test-pass.png)
 
 ## 3. 优化
 
