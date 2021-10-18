@@ -1,0 +1,17 @@
+{
+  "name": "01-promise",
+  "version": "1.0.0",
+  "description": "手写 promise 2020",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "watch": "jest --watchAll",
+    "coverage": "jest --coverage"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jest": "^26.6.3"
+  }
+}

@@ -2,12 +2,6 @@
   "name": "magic-wheel",
   "version": "1.0.0",
   "description": "magic-wheel",
-  "main": "index.js",
-  "scripts": {
-    "test": "jest",
-    "watch": "jest --watchAll",
-    "coverage": "jest --coverage"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Arrow-zb/magic-wheel.git"
@@ -19,7 +13,4 @@
     "url": "https://github.com/Arrow-zb/magic-wheel/issues"
   },
   "homepage": "https://github.com/Arrow-zb/magic-wheel#readme",
-  "dependencies": {
-    "jest": "^26.6.3"
-  }
 }
