@@ -1,4 +1,4 @@
-// 05-Promise.all
+// 08-Promise.any
 const PubSub = require('pubsub-js');
 
 const PENDING = 'pending';
@@ -159,21 +159,105 @@ class ES6Promise {
       });
     });
   };
+
+  static race(promises) {
+    if (!Array.isArray(promises)) { // 检查是否为数组，否则抛出 TypeError 错误
+      throw TypeError(`${promises} is not iterable`);
+    };
+    
+    return new ES6Promise((resolve, reject) => {
+      PubSub.subscribe('getPromiseResult', (_, [flag, valueOrReason]) => {
+        flag ? resolve(valueOrReason) : reject(valueOrReason);
+      });
+
+      promises.forEach((item) => {
+        try {
+          item.then(
+            value => PubSub.publishSync('getPromiseResult', [true, value]),
+            reason => PubSub.publishSync('getPromiseResult', [false, reason]),
+          );
+        } catch (error) {
+          reject(error)
+        };
+      });
+    });
+  };
+
+  static allSettled(promises) {
+    if (!Array.isArray(promises)) { // 检查是否为数组，否则抛出 TypeError 错误
+      throw TypeError(`${promises} is not iterable`);
+    };
+
+    return new ES6Promise((resolve, reject) => {
+      const res = []; // 保存实例执行的结果
+      let l = promises.length;
+      if (l === 0) resolve(res);
+      PubSub.subscribe('getPromiseResult', (_, [flag, valueOrReason, index]) => { // 订阅获取实例执行的结果
+        if (flag) {
+          res[index] = { status: 'fulfilled', value: valueOrReason};
+        } else {
+          res[index] = { status: 'rejected', reason: valueOrReason};
+        };
+        l--;
+        if (l === 0) resolve(res);
+      });
+
+      promises.forEach((item, index) => {
+        try {
+          ES6Promise.resolve(item).then(  // 发布获取实例执行的结果
+            value => PubSub.publishSync('getPromiseResult', [true, value, index]),
+            reason => PubSub.publishSync('getPromiseResult', [false, reason, index]),
+          );
+        } catch (error) {
+          reject(error);
+        };
+      });
+    });
+  };
+
+  static any(promises) {
+    if (!Array.isArray(promises)) {
+      throw TypeError(`${promises} is not iterable`);
+    };
+
+    return new ES6Promise((resolve, reject) => {
+      const res = []; 
+      let l = promises.length;
+      if (l === 0) resolve(res);
+      PubSub.subscribe('getPromiseResult', (_, [flag, valueOrReason, index]) => {
+        if (flag) resolve(valueOrReason); // 如果其中一个实例解决了，直接解决 promiseAny
+        l--;
+        res[index] = valueOrReason;
+        if (l === 0) reject(res);
+      });
+
+      promises.forEach((item, index) => {
+        try {
+          ES6Promise.resolve(item).then(
+            value => PubSub.publishSync('getPromiseResult', [true, value, index]),
+            reason => PubSub.publishSync('getPromiseResult', [false, reason, index]),
+          );
+        } catch (error) {
+          reject(error);
+        };
+      });
+    });
+  };
 };
 
 const promises1 = [
   Promise.resolve(),
-  new Promise((resolve, reject) => setTimeout(() => resolve(1), 1000)),
+  new Promise((resolve, reject) => setTimeout(() => reject(1), 1000)),
   5,
 ];
 
 const promises2 = [
   ES6Promise.resolve(),
-  new ES6Promise((resolve, reject) => setTimeout(() => resolve(1), 1000)),
+  new ES6Promise((resolve, reject) => setTimeout(() => reject(1), 1000)),
   5,
 ];
-const p1 = Promise.all(promises1);
-const p2 = ES6Promise.all(promises2);
+const p1 = Promise.any(promises1);
+const p2 = ES6Promise.any(promises2);
 setTimeout(() => {
   console.log(p1, p2);
 }, 1100);
