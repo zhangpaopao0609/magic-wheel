@@ -1,3 +1,4 @@
+// 09-Promise.try
 const PubSub = require('pubsub-js');
 
 const PENDING = 'pending';
@@ -47,7 +48,7 @@ class ES6Promise {
         this.state = FULFILLED;
         this.value = value;
         this.onFulfilledCallback.forEach(onFulfilled => onFulfilled(value));
-      }
+      };
     };
 
     const reject = reason => {
@@ -55,7 +56,7 @@ class ES6Promise {
         this.state = REJECTED;
         this.reason = reason;
         this.onRejectedCallback.forEach(onRejected => onRejected(reason)); 
-      }
+      };
     };
 
     try {
@@ -94,53 +95,49 @@ class ES6Promise {
       } else {
         this.onFulfilledCallback.push(value => setTimeout(() => handleResolve(value), 0));
         this.onRejectedCallback.push(reason => setTimeout(() => handleReject(reason), 0));
-      }
-    });
-
-    return promise2;
-  };
-
-  catch(onRejected) {
-    const onRejectedNow = typeof onRejected === 'function' ? onRejected : reason => { throw reason };
-    const promise2 = new ES6Promise((resolve, reject) => {
-      const handleReject = reason => {
-        try {
-          const x = onRejectedNow(reason);
-          resolvePromise(promise2, x, resolve, reject);
-        } catch (error) {
-          reject(error);
-        };
       };
-
-      if (this.state === REJECTED) {
-        setTimeout(() => handleReject(this.reason), 0);
-      } else if(this.state === PENDING) {
-        this.onRejectedCallback.push(reason => setTimeout(() => handleReject(reason), 0));
-      }
     });
 
     return promise2;
   };
 
-  static resolve(value) {
-    return new ES6Promise(resolve => resolve(value));
-  }
+  catch(onRejected) { // 仅需执行 this.then(null, onRejected) 并返回结果即可
+    return this.then(null, onRejected);
+  };
 
-  static reject(reason) {
-    return new ES6Promise((_, reject) => reject(reason));
-  }
+  finally(onFinally) {
+    const onFulfilled = value => {
+      onFinally();
+      return value;
+    };
+    const onRejected = reason => {
+      onFinally();
+      throw reason;
+    };
+    return this.then(onFulfilled, onRejected);
+  };
+
+  static resolve(arg) {
+    return new ES6Promise((resolve, reject) => {
+      resolvePromise(null, arg, resolve, reject);
+    });
+  };
+
+  static reject(arg) {
+    return new ES6Promise((_, reject) => reject(arg));
+  };
 
   static all(promises) {
-    // 利用发布订阅的机制
-    // 只要有一个失败，直接返回拒绝的 promise，全部成功后返回解决的 promise
-    if (!promises || !Array.isArray(promises) || promises.length === 0) {
-      throw new Error('not iterable');
+    if (!Array.isArray(promises)) { // 检查是否为数组，否则抛出 TypeError 错误
+      throw TypeError(`${promises} is not iterable`);
     };
-    const promise = new ES6Promise((resolve, reject) => {
+
+    return new ES6Promise((resolve, reject) => {
+      const res = []; // 保存实例执行的结果
       let l = promises.length;
-      const res = [];
-      PubSub.subscribe('observe', (_, [flag, valueOrReason, index]) => {
-        if (!flag) reject(valueOrReason);
+      if (l === 0) resolve(res);
+      PubSub.subscribe('getPromiseResult', (_, [flag, valueOrReason, index]) => { // 订阅获取实例执行的结果
+        if (!flag) reject(valueOrReason); // 如果其中一个实例拒绝了，直接拒绝 promiseAll
         l--;
         res[index] = valueOrReason;
         if (l === 0) resolve(res);
@@ -148,65 +145,106 @@ class ES6Promise {
 
       promises.forEach((item, index) => {
         try {
-          item.then(
-            value => PubSub.publishSync('observe', [true, value, index]),
-            reason => PubSub.publishSync('observe', [false, reason, index]),
+          ES6Promise.resolve(item).then(  // 发布获取实例执行的结果
+            value => PubSub.publishSync('getPromiseResult', [true, value, index]),
+            reason => PubSub.publishSync('getPromiseResult', [false, reason, index]),
           );
         } catch (error) {
-          reject(error)
+          reject(error);
         };
       });
     });
-    return promise;
-  }
+  };
 
   static race(promises) {
-    // 同样利用发布订阅的机制
-    // 只要有一个成功或者失败，直接返回解决的 promise或返回拒绝的 promise
-    if (!promises || !Array.isArray(promises) || promises.length === 0) {
-      throw new Error('not iterable');
+    if (!Array.isArray(promises)) { // 检查是否为数组，否则抛出 TypeError 错误
+      throw TypeError(`${promises} is not iterable`);
     };
-    const promise = new ES6Promise((resolve, reject) => {
-      PubSub.subscribe('observe', (_, [flag, valueOrReason]) => {
-        if (flag) {
-          resolve(valueOrReason)
-        } else {
-          reject(valueOrReason);
-        }
+    
+    return new ES6Promise((resolve, reject) => {
+      PubSub.subscribe('getPromiseResult', (_, [flag, valueOrReason]) => {
+        flag ? resolve(valueOrReason) : reject(valueOrReason);
       });
 
       promises.forEach((item) => {
         try {
           item.then(
-            value => PubSub.publishSync('observe', [true, value]),
-            reason => PubSub.publishSync('observe', [false, reason]),
+            value => PubSub.publishSync('getPromiseResult', [true, value]),
+            reason => PubSub.publishSync('getPromiseResult', [false, reason]),
           );
         } catch (error) {
           reject(error)
         };
       });
     });
-    return promise;
-  }
+  };
+
+  static allSettled(promises) {
+    if (!Array.isArray(promises)) { // 检查是否为数组，否则抛出 TypeError 错误
+      throw TypeError(`${promises} is not iterable`);
+    };
+
+    return new ES6Promise((resolve, reject) => {
+      const res = []; // 保存实例执行的结果
+      let l = promises.length;
+      if (l === 0) resolve(res);
+      PubSub.subscribe('getPromiseResult', (_, [flag, valueOrReason, index]) => { // 订阅获取实例执行的结果
+        if (flag) {
+          res[index] = { status: 'fulfilled', value: valueOrReason};
+        } else {
+          res[index] = { status: 'rejected', reason: valueOrReason};
+        };
+        l--;
+        if (l === 0) resolve(res);
+      });
+
+      promises.forEach((item, index) => {
+        try {
+          ES6Promise.resolve(item).then(  // 发布获取实例执行的结果
+            value => PubSub.publishSync('getPromiseResult', [true, value, index]),
+            reason => PubSub.publishSync('getPromiseResult', [false, reason, index]),
+          );
+        } catch (error) {
+          reject(error);
+        };
+      });
+    });
+  };
+
+  static any(promises) {
+    if (!Array.isArray(promises)) {
+      throw TypeError(`${promises} is not iterable`);
+    };
+
+    return new ES6Promise((resolve, reject) => {
+      const res = []; 
+      let l = promises.length;
+      if (l === 0) resolve(res);
+      PubSub.subscribe('getPromiseResult', (_, [flag, valueOrReason, index]) => {
+        if (flag) resolve(valueOrReason); // 如果其中一个实例解决了，直接解决 promiseAny
+        l--;
+        res[index] = valueOrReason;
+        if (l === 0) reject(res);
+      });
+
+      promises.forEach((item, index) => {
+        try {
+          ES6Promise.resolve(item).then(
+            value => PubSub.publishSync('getPromiseResult', [true, value, index]),
+            reason => PubSub.publishSync('getPromiseResult', [false, reason, index]),
+          );
+        } catch (error) {
+          reject(error);
+        };
+      });
+    });
+  };
+
+  static try(tryFn) {
+    if (typeof tryFn === 'function') {
+      throw TypeError("It is not function!!");
+    };
+
+    return new ES6Promise(resolve => resolve(tryFn()))
+  };
 };
-
-
-const p0 = ES6Promise.resolve(1);
-p0.then(value => console.log('p0-resolve-', value))
-
-const p1 = ES6Promise.reject(2);
-p1.then(null, reason => console.log('p1-reject-', reason))
-
-p0.catch(reason => console.log('p0-resolve-catch', reason));
-p1.catch(reason => console.log('p1-reject-catch', reason));
-
-
-// const p3 = Promise.all([p0]);
-// setTimeout(() => {
-//   console.log(p3);
-// }, 10);
-
-const p4 = ES6Promise.all([p0, p1]);
-setTimeout(() => {
-  console.log(p4);
-}, 10);
