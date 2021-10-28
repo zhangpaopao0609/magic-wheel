@@ -543,5 +543,5 @@ class ES6Promise {
 
 注意： 本文仅提供 ES6 Promise 的实现思路，因为目前并未发现类似  [promises-tests](https://github.com/promises-aplus/promises-tests) 这样的测试仓库（这个仓库提供了基于 Promises/A+ 规范实现的 Promise 测试方法），因此并未做全面的测试，所以是否完全正确有待测试。
 
-本文所有的代码可在此仓库中查看，[点击可查看](https://github.com/Ardor-Zhang/magic-wheel/tree/main/01-promise-es6/src/implementation-steps)。
+本文所有的代码可在此仓库中查看，[点击可查看](https://github.com/Ardor-Zhang/magic-wheel/tree/main/01-promise-es6)。
 
