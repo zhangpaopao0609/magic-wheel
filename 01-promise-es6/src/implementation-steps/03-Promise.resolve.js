@@ -132,7 +132,7 @@ const p4 = ES6Promise.resolve(new ES6Promise((_, reject) => reject(1)));
 //   console.log(p3, p4);
 // }, 1000);
 
-const p5 = new ES6Promise(resolve => resolve(new ES6Promise((_, reject) => reject(1))))
+const p5 = new Promise(resolve => resolve(new Promise((_, reject) => reject(1))))
 setTimeout(() => {
-  console.log(p5);
+  log
 }, 1000);
