@@ -116,16 +116,23 @@ class ES6Promise {
   };
 
   static resolve(arg) {
-    if (arg instanceof ES6Promise) {
-      return arg;
-    } else {
-      return new ES6Promise((resolve, reject) => {
-        resolvePromise(null, arg, resolve, reject);
-      });
-    }
+    return new ES6Promise((resolve, reject) => {
+      resolvePromise(null, arg, resolve, reject);
+    });
   };
 };
 
 const p1 = Promise.resolve(1);
 const p2 = ES6Promise.resolve(1);
-console.log(p1, p2);
+// console.log(p1, p2);
+
+const p3 = Promise.resolve(new Promise((_, reject) => reject(1)));
+const p4 = ES6Promise.resolve(new ES6Promise((_, reject) => reject(1)));
+// setTimeout(() => {
+//   console.log(p3, p4);
+// }, 1000);
+
+const p5 = new ES6Promise(resolve => resolve(new ES6Promise((_, reject) => reject(1))))
+setTimeout(() => {
+  console.log(p5);
+}, 1000);

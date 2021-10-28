@@ -2,7 +2,7 @@
 
 # 手写轮子系列二 —— 手写完整版 ES6 Promise 
 
-在阅读本文前，前务必已阅读 [手写轮子系列一 —— 手写 Promise](https://blog.csdn.net/qq_41800366/article/details/120830777?spm=1001.2014.3001.5502) 一文，此文参照 Promises/A+ 规范完整地实现了 Promise 对象，本文是在此基础上实现 ES6 Promise 额外的内容。
+在阅读本文前请务必已阅读 [手写轮子系列一 —— 手写 Promise](https://blog.csdn.net/qq_41800366/article/details/120830777?spm=1001.2014.3001.5502) 一文，此文参照 Promises/A+ 规范完整地实现了 Promise 对象，本文是在**此基础上实现 ES6 Promise 额外的内容**。
 
 ES6 Promise 同样是参照 Promises/A+ 规范实现的，但 ES6 Promise 还额外增加了两个实例方法：
 
@@ -46,10 +46,10 @@ class ES6Promise {		// 将前文最终的 FullPromisePerfect 改为了 ES6Promis
 
 ### 1.2 `Promise.prototype.finally()`
 
-`finally()`方法用于指定不管 Promise 对象最后状态如何，都会执行的操作，和 `try……catch……finally` 中的 `finally` 功能是一致的。该方法是 ES2018 引入标准的。
+`finally()`方法用于指定不管 promise 实例最后状态如何，都会执行的操作，和 `try……catch……finally` 中的 `finally` 功能是一致的。该方法是 ES2018 引入标准的。
 
-- `finally()` 方法接收 `onFinally` 函数作为参数， 并且 `onFinally` 函数不接受任何参数，这意味着无法知道 promise 是解决还是拒绝。也说明，`finally` 方法里面的操作，与状态无关的，不依赖于 promise 的执行结果。
-- promise 无论执行结果是解决还是拒绝，`finally()` 方法中的 `onFinally` 函数都会执行，且一定是在  promise 已解决或已拒绝后执行（执行时机与 `onFulfilled` 或 `onRejected`  执行时机一致）
+- `finally()` 方法接收 `onFinally` 函数作为参数， 并且 `onFinally` 函数不接受任何参数，这意味着无法知道 promise 实例是解决还是拒绝。也说明，`finally` 方法里面的操作，与状态无关的，不依赖于 promise 的执行结果
+- promise 无论执行结果是解决还是拒绝，`finally()` 方法中的 `onFinally` 函数都会执行，且一定是在  promise 实例已解决或已拒绝后执行（执行时机与 `onFulfilled` 或 `onRejected`  执行时机一致）
 - `finally()` 方法返回一个新的 promise，返回的 promise 的状态完全依赖于前一个 promise 的状态，即前一个 promise 为解决，`finally()` 方法返回的状态仍然为解决，拒绝同理。 
 
 `finally` 本质上其实是 `then` 方法的特例，即：
@@ -98,34 +98,93 @@ class ES6Promise {
 
 ### 2.1 `Promise.resolve()`
 
-`Promise.resolve()` 可以实例化一个已解决的 promise，它完全等价于`new Promise(resolve => resolve())`。
+`Promise.resolve()` 可以实例化一个 promise，这个方法可接收一个参数，根据参数不同，实例化的 promise 也不相同
 
-```javascript
-Promise.resolve('foo');
-// 等价于
-new Promise(resolve => resolve('foo'));
-```
+1. 参数是一个 promise 实例
 
-因此，实现的方法也很简单，只是需要注意一点， ES6 中为 class 对象添加静态方法是直接在方法名称前加上 `static` 关键字，如下：
+   如果参数是 promise 实例，那么 `Promise.resolve` 将不做任何修改、原封不动地返回这个实例。
 
-```js
-// 03-Promise.resolve
-...(省略代码)
+2. 参数是一个 `thenable` 对象
 
-class ES6Promise {
+   `thenable` 对象指的是具有 `then` 方法的对象，比如下面这个对象。
+
+   ```javascript
+   let thenable = {
+     then: function(resolve, reject) {
+       resolve(42);
+     }
+   };
+   ```
+
+   `Promise.resolve() `方法会将这个对象转为 Promise 对象，然后就立即执行 `thenable` 对象的 `then()` 方法。
+
+   ```javascript
+   let thenable = {
+     then: function(resolve, reject) {
+       resolve(42);
+     }
+   };
+   
+   let p1 = Promise.resolve(thenable);
+   p1.then(function (value) {
+     console.log(value);  // 42
+   });
+   ```
+
+   上面代码中，`thenable  ` 对象的 `then()` 方法执行后，对象 `p1` ，即返回的 promise 实例的状态就变为 `resolved`，从而立即执行最后那个 `then()` 方法指定的回调函数，输出42。
+
+3. 参数不是具有`then()`方法的对象，或根本就不是对象
+
+   如果参数是一个原始值，或者是一个不具有 `then()` 方法的对象，则 `Promise.resolve()` 方法返回一个新的 Promise 对象，状态为 `resolved`。
+
+   ```javascript
+   const p = Promise.resolve('Hello');
+   
+   p.then(function (s) {
+     console.log(s)
+   });
+   // Hello
+   ```
+
+   上面代码生成一个新的 Promise 对象的实例 `p`。由于字符串 `Hello` 不属于异步操作（判断方法是字符串对象不具有 then 方法），返回 Promise 实例的状态从一生成就是 `resolved`，所以回调函数会立即执行。`Promise.resolve()` 方法的参数，会同时传给回调函数。
+
+4. 不带有任何参数
+
+   `Promise.resolve()` 方法允许调用时不带参数，直接返回一个 `resolved` 状态的 promise 实例。
+
+因此，实现的方法也很简单：
+
+-  ES6 中为 class 对象添加静态方法是直接在方法名称前加上 `static` 关键字，因此使用 `static resolve` 定义静态方法
+
+- 上面 4 点完全和 [手写轮子系列一 —— 手写 Promise](https://blog.csdn.net/qq_41800366/article/details/120830777?spm=1001.2014.3001.5502) 一文中的 Promise 解决过程  `resolvePromise` 完全一致，因此仅需要返回一个新的 promise 并且在执行函数中执行 Promise 解决过程即可。
+
+  > 这里可能不是很好理解，但是只要你仔细看过上一篇文章，那么这里应该没什么问题
+
+  ```js
+  // 03-Promise.resolve
   ...(省略代码)
-
-  static resolve(arg) {
-    return new ES6Promise(resolve => resolve(arg));
+  function resolvePromise(promise, x, resolve, reject) {
+    ...(省略代码)
+  }
+  
+  class ES6Promise {
+    ...(省略代码)
+  
+    static resolve(arg) {
+      return new ES6Promise((resolve, reject) => {
+        resolvePromise(null, arg, resolve, reject);
+      });
+    };
   };
-};
-```
+  ```
 
 ### 2.2 `Promise.reject()`
 
-`Promise.reject()` 可以实例化一个已拒绝的 promise，与 `Promise.resolve()` 同理，它完全等价于`new Promise((_, reject) => reject())`。
+`Promise.reject()` 也可以实例化一个 promise ，同样可接收一个参数，和  `Promise.resolve()` 不同的是  `Promise.reject()`  返回的一定是一个已拒绝的 promise， 并且方法的参数会**原封不动地**作为 `reject` 的理由，变成后续方法的参数。
 
-实现如下：
+它完全等价于 `new Promise((_, reject) => reject())`。
+
+因此实现如下：
 
 ```js
 // 04-Promise.reject
@@ -480,4 +539,9 @@ class ES6Promise {
 
 ## 3. 总结
 
-相比较
+相比较 Promises/A+ 规范的 Promise 对象，ES6 更多的是提供了大量的便捷方法，所以在实现上也只是 Promise 基础方法的组合，也就是在应用层面做的提升，所以整体实现并没有太大的难度。
+
+注意： 本文仅提供 ES6 Promise 的实现思路，因为目前并未发现类似  [promises-tests](https://github.com/promises-aplus/promises-tests) 这样的测试仓库（这个仓库提供了基于 Promises/A+ 规范实现的 Promise 测试方法），因此并未做全面的测试，所以是否完全正确有待测试。
+
+本文所有的代码可在此仓库中查看，[点击可查看](https://github.com/Ardor-Zhang/magic-wheel/tree/main/01-promise-es6/src/implementation-steps)。
+

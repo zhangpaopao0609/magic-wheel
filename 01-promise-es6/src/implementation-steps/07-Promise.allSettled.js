@@ -116,16 +116,12 @@ class ES6Promise {
     };
     return this.then(onFulfilled, onRejected);
   };
-
+  
   static resolve(arg) {
-    if (arg instanceof ES6Promise) {
-      return arg;
-    } else {
-      return new ES6Promise((resolve, reject) => {
-        resolvePromise(null, arg, resolve, reject);
-      });
-    }
-  } 
+    return new ES6Promise((resolve, reject) => {
+      resolvePromise(null, arg, resolve, reject);
+    });
+  }; 
 
   static reject(arg) {
     return new ES6Promise((_, reject) => reject(arg));
