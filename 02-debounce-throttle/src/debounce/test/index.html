@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>测试防抖</title>
+  <style>
+    body {
+      height: 4000px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>用于测试防抖</h1>
+  <h2>向下滚动触发滚轮事件以模拟防抖中触发的事件</h2>
+  
+  <script src="../debounce.js"></script>
+  <script>
+    function getScrollPosition(event) {
+      const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+      console.log('滚动条位置:', scrollTop, '滚动事件:', event);
+    };
+    
+    window.onscroll = debounce(getScrollPosition, 1000);
+  </script>
+</body>
+
+</html>
