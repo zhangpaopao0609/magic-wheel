@@ -4,15 +4,13 @@
  * @param {*} interval 每隔 interval 这段时间都需要执行一次
  */
 function throttle(fn, interval) {
-  let time = Date.now();
+  let record = Date.now();  // 记录前一次调用的时间
 
   return function(...args) {
-    const i = Date.now();
-    if (i - time < interval) {
-      return;
-    } else {
+    const now = Date.now();
+    if (now - record > interval) {  // 当当前时间和上一次调用时间间隔大于间隔时间时，执行回调函数
       fn(...args);
-      time = i;
-    }
-  }
-}
+      record = now; // 调用时重新赋值
+    };
+  };
+};
