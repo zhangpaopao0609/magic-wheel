@@ -157,4 +157,4 @@ function throttle(fn, interval) {
    - 防抖：当触发事件结束后才真正的执行对应的事件，中间不执行
    - 节流：每隔一段时间都去执行一次事件（当然是在触发的过程中）
 
-[点击查看源码地址，顺便给个star吧！！](https://github.com/Arrow-zb/magic-wheel)
+[点击查看源码地址](https://github.com/ardor-zhang/magic-wheel/tree/main/02-debounce-throttle)
