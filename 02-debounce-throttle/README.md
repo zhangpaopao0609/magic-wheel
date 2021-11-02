@@ -64,7 +64,7 @@ function debounce(fn, delay) {
 };
 ```
 
-代码相当的简洁，**仅仅只有 4 行，值得细细品味**。简单测试如下：
+代码相当的简洁，**仅仅只有 4 行，值得细细品味**，不过代码初始时并非 4 行，可 [点击查看 ](https://github.com/Ardor-Zhang/magic-wheel/tree/main/02-debounce-throttle/src/debounce)实现过程代码。简单测试如下：
 
 ```html
 <script>
