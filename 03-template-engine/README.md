@@ -296,9 +296,8 @@ it("{% %} js  语句", () => {
 测试全部通过
 
 <div align='center'>
-  <img src='./img/test.png' style='width: 40%' zoom='40%'/>
+  <img src='./img/test.png' style='width: 26%' zoom='26%'/>
 </div>
-
 
 
 ## 5. 总结
@@ -307,5 +306,5 @@ it("{% %} js  语句", () => {
 
 本文给出的方案并非是最优的方案，比如正则模式替换就存在可以优化的地方，这里仅仅给出一个思路，期望大家可以自己写一个更完美的模板引擎。
 
-点击可查看源码地址，感兴趣的可以看看。
+[点击可查看源码地址，感兴趣的可以看看](https://github.com/Ardor-Zhang/magic-wheel/tree/main/03-template-engine)。
 

@@ -219,9 +219,10 @@ it("{% %} js  语句", () => {
 });
 ```
 <div align='center'>
-  <img src='./img/test.png' style='width: 40%' zoom='40%'/>
+  <img src='./img/test.png' style='width: 26%' zoom='26%'/>
 </div>
+
 
 ## 5. 源码地址
 
-[点击查看源码地址，顺便给个star吧！！](https://github.com/Arrow-zb/magic-wheel)
+[点击查看源码地址，顺便给个star吧！！](https://github.com/Ardor-Zhang/magic-wheel/tree/main/03-template-engine)
