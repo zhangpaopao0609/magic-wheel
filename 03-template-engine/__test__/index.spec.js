@@ -1,4 +1,4 @@
-const compiler = require('../index');
+const compiler = require('../src/index');
 
 it("解析 {{  }}", () => {
   const output = compiler("<h1>{{ name }}</h1>")({ name: "arrow" });
