@@ -82,4 +82,5 @@ pubsub.emit('getMessage', message, '--');
 
 pubsub.remove(p1);
 pubsub.emit('getMessage', message, '--');
+
 module.exports = new PublishSubscribe();
