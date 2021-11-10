@@ -1,4 +1,4 @@
-const pubsub = require('../index');
+const pubsub = require('../perfect');
 
 test('订阅 A 事件并立即发布，发布时传递 1 个参数', () => {
   const message = '这是 A 收到的第一个参数';

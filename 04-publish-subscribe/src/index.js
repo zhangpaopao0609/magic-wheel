@@ -70,18 +70,4 @@ class PublishSubscribe {
   };
 };
 
-const message = '这是 getMessage 收到的第一个参数';
-const pubsub = new PublishSubscribe();
-const p1 = pubsub.on('getMessage', (args) => {
-  console.log(args);
-});
-const p2 = pubsub.on('getMessage1', (args) => {
-  console.log(args, '-------');
-});
-pubsub.emit('getMessage', message, '--');
-pubsub.emit('getMessage1', message, '--');
-
-pubsub.remove(p1);
-pubsub.emit('getMessage1', message, '--');
-
 module.exports = new PublishSubscribe();
