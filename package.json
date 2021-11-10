@@ -4,13 +4,13 @@
   "description": "magic-wheel",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Arrow-zb/magic-wheel.git"
+    "url": "git+https://github.com/arrow-zb/magic-wheel.git"
   },
   "keywords": [],
-  "author": "paopao-arrow",
+  "author": "zhangpaopao",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Arrow-zb/magic-wheel/issues"
+    "url": "https://github.com/arrow-zb/magic-wheel/issues"
   },
-  "homepage": "https://github.com/Arrow-zb/magic-wheel#readme"
+  "homepage": "https://github.com/arrow-zb/magic-wheel#readme"
 }
