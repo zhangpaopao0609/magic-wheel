@@ -88,6 +88,14 @@
 
 ### 4.1 基础版
 
+实现步骤如下：
+
+1.  使用 Object `subscribes` 来保存所有的订阅事件，Object 键值对中：
+   - 键：订阅的事件名
+   - 值：一个数组 `subscribeCallbacks`（这个数组用于保存事件名对应的所有回调函数，<font color='red'>每个事件名都会对应一个数组 </font>）
+2.  `on` 方法接收订阅的事件名和回调函数。`on` 方法将回调函数 push 到事件名对应的数组中
+3. `emit` 方法接收发布的事件名和传递的参数。`emit` 方法执行（调用）这个事件名对应的所有函数并传递参数
+
 ```js
 class PublishSubscribeBasic {
   subscribes = {}; // 保存所有的订阅事件
@@ -120,17 +128,133 @@ setTimeout(() => pubsub.emit('A', '这是 A 收到的第一个参数'), 1000);	/
 // [ '这是 A 收到的第一个参数' ] （一秒后打印结果）
 ```
 
-可以看到，实现一个基础版的发布订阅是非常简单的，仅仅几行代码便可实现。 `on` 函数用于
+可以看到，实现一个基础版的发布订阅是非常简单的，仅仅几行代码便可实现。 `on` 方法用于订阅者订阅事件和传递回调函数，`emit` 方法用于发布者发布事件和传递参数，`subscribes` 对象用于保存所有的订阅事件以及事件对应的回调函数。
 
+### 4.2 进阶版
 
+基础版的发布订阅可以实现简单的事件订阅和发布功能，但是还存在以下几点不尽如人意之处：
 
+1. 仅支持订阅事件，但不支持取消订阅，进阶版中实现这一功能
 
+2. 基础版采用的是 Object 保存所有订阅事件以及 Array 来保存事件对应的回调函数，因为发布订阅一般采用单例模式，即在全局中一般仅用一个对象来实现发布订阅所有的事件，所以一般会使用这个对象来 **存储** 较多的数据、**插入**和 **查找** 较多的次数，所以可以使用 Map 来替换 Object，具体的性能比对可参考《JavaScript 高级程序设计（第四版）》168 页 “6.4.3 选择 Object 还是 Map”。
 
+   > 备注： 进阶版中不需要使用 Array，因此也不需要替换成 Set
 
+进阶版的关键在于如何实现取消订阅：
 
+- 订阅事件的过程其实是：告知发布者对象保存订阅者的信息即订阅者的回调函数，类比于购房者告知售楼部自己的电话号码售楼部将其写在花名册上
+- 那么取消订阅就是相反的操作：购房者告知售楼部不要给自己打电话了，售楼部就会找到这个购房者的电话从花名册上删除掉，那么在程序中，就是告知发布者对象<font color='red'> 删除 </font>订阅者的信息，那么此时对象就去找到此订阅者对应的回调函数然后<font color='red'> 删除 </font>掉
 
+那么此时的问题是：`PublishSubscribe` 对象如何找到订阅者对应的回调函数呢？要想找到，那么是不是应该在保存的时候就留下一个唯一的标识呀，就像购房者留下的电话号码。那么在保存订阅者的回调函数时，不再使用数组，而是使用键值对的形式，键使用唯一的表示如 uuid，值就是回调函数，订阅后，将这个唯一的标识返回给订阅者，订阅者就可以拿着这个唯一标识来取消订阅了，发布者可以拿着这个标识去查找，找到后删除这个键值对就实现了。
 
+实现步骤如下：
 
+1.  使用 Map `subscribes` 来保存所有的订阅事件，Map 键值对中：
+
+   - 键：订阅的事件名
+   - 值：一个新的 Map `subscribeCallbacks`（这个 Map 用于保存事件名对应的所有回调函数，<font color='red'>每个事件名都会对应一个 Map </font>）
+
+2.  `on` 方法接收订阅的事件名和回调函数。`on` 方法会将下面这个键值对保存到<font color='red'>**事件对应**的</font> Map 中：
+
+   - 键：一个由时间戳和随机数模拟的 uuid， `getUUID`
+   - 值：传递的回调函数
+
+   同时 `on` 方法将这个 **uuid 返回给订阅者，用于订阅者取消订阅时的唯一标识**
+
+3. `emit` 方法接收发布的事件名和传递的参数。`emit` 方法执行（调用）这个事件对应的所有函数并传递参数
+
+4. `remove` 方法接收一个标识。`remove` 方法在 `subscribes` 中查找这个标识：
+
+   - 标识查找到并且如果为事件名：删除事件名对应的所有回调函数，即相当于事件取消了
+   - 标识查找到并且如果为某个回调函数对应的 uuid：删除这个回调函数，即取消这个订阅者的回调
+   - 标识未查找到，不做任何逻辑，可以返回错误等提示，看需求而定。
+
+实现代码如下：
+
+```js
+class PublishSubscribe {
+  subscribes = new Map(); // 保存所有的订阅事件
+  
+  /**
+   * 模拟 UUID，用于某订阅事件回调函数对应的 key
+   * @returns 模拟获取一个 UUID 
+   */
+  getUUID() {
+    return String(Date.now()) + String(Math.random());
+  };
+
+  /**
+   * 获取事件名对应的所有订阅事件，如果没有，返回一个空 Map
+   * @param {*} subscribe 
+   * @returns 事件名对应的所有订阅事件的回调函数
+   */
+  getSubscribe(subscribe) {
+    return this.subscribes.get(subscribe) || new Map();
+  };
+
+  /**
+   * 订阅函数
+   * @param {*} subscribe 订阅的事件名
+   * @param {*} callback 订阅的回调函数
+   * @returns 本次订阅的标识符，用于之后取消订阅
+   */
+  on(subscribe, callback) {
+    const uuid = this.getUUID();
+    const subscribeCallbacks = this.getSubscribe(subscribe);
+    subscribeCallbacks.set(uuid, callback);
+    !this.subscribes.get(subscribe) && this.subscribes.set(subscribe, subscribeCallbacks);
+    return uuid;
+  };
+
+  /**
+   * 发布函数
+   * @param {*} subscribe 订阅的事件名
+   * @param  {...any} args 发布时传递的参数
+   */
+  emit(subscribe, ...args) {
+    const subscribeCallbacks = this.getSubscribe(subscribe);
+    for (const [uuid, callback] of subscribeCallbacks) {
+      callback.call(this, args);
+    };
+  };
+
+  /**
+   * 取消订阅
+   * @param {*} value 可以是事件名，此时会取消事件名对应的所有订阅；可以为某个订阅的 uuid，此时仅取消此个订阅
+   */
+  remove(value) {
+    const isSubscribe = typeof value === 'string' && this.subscribes.get(value);  // 是事件名
+    const isUUID = !isSubscribe && typeof value === 'string';
+
+    if (isSubscribe) {
+      this.subscribes.delete(value);
+    } else if (isUUID) {
+      for (const [subscribe, subscribeCallbacks] of this.subscribes) {
+        for (const [uuid, callback] of subscribeCallbacks) {
+          if (uuid === value) {
+            subscribeCallbacks.delete(value);
+            return;
+          };
+        };
+      };
+    } else {
+      return;
+    };
+  };
+};
+```
+
+上述的代码每个方法都有详细的注释，其中可能使用到了 Map 的一些 API，看不明白的可以稍微查一下。轮子也做了相应的单测，因单测较多，这里就不做罗列了，感兴趣的可以[点击查看]()。
+
+## 5. 总结
+
+说实在的，自己开发这些年，发布订阅在开发中用得不算频繁，但它的思想却是在各大框架中随处可见，比如 vue 中就可以使用发布订阅来实现组件间的通信，又比如 Promise 中用发布订阅来实现静态方法 `all race` 。
+
+如文章开始所讲，说发布—订阅是一种轮子，那格局就太小了；它妥妥的是一种设计模式，而且是非常好用、实用的设计模式，理解它，然后玩转它，走起！！
+
+文中售楼处的例子来源于 《JavaScript 设计模式与开发实践》第八章发布——订阅模式，感恩前辈的付出，太强了。
+
+[点击可查看本文所有代码]()
 
 
 

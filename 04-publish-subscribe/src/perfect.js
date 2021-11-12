@@ -12,7 +12,7 @@ class PublishSubscribe {
   /**
    * 获取事件名对应的所有订阅事件，如果没有，返回一个空 Map
    * @param {*} subscribe 
-   * @returns 本次订阅的标识符，用于之后取消订阅
+   * @returns 事件名对应的所有订阅事件的回调函数
    */
   getSubscribe(subscribe) {
     return this.subscribes.get(subscribe) || new Map();
