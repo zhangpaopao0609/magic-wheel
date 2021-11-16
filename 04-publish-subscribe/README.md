@@ -49,7 +49,7 @@
 
 ## 3. 实现思路
 
-除了程序为我们提供的发布—订阅模式机制外 —— 如：DOM 事件。我们自己如何实现自定义事件的发布订阅呢？比如在 ES6 Promise 的 `race all ` 等方法的实现中就使用到了发布订阅的机制，[可点击查看]()。下面就我们就来分析分析如何实现发布订阅—模式吧！
+除了程序为我们提供的发布—订阅模式机制外 —— 如：DOM 事件。我们自己如何实现自定义事件的发布订阅呢？比如在 ES6 Promise 的 `race all ` 等方法的实现中就使用到了发布订阅的机制，[可点击查看](https://github.com/ardor-zhang/magic-wheel/tree/main/01-promise-es6#23-promiseall)。下面就我们就来分析分析如何实现发布订阅—模式吧！
 
 1. 订阅者 —— 订阅者期望收到发布者发布的消息并且是发布时立即收到
    - 在售楼的例子中：订阅者（即购房者）给发布者（即售楼处）留下了电话，<font color='red'>期望 </font>当楼盘推出时立即收到售楼部的电话并告知消息
@@ -244,7 +244,7 @@ class PublishSubscribe {
 };
 ```
 
-上述的代码每个方法都有详细的注释，其中可能使用到了 Map 的一些 API，看不明白的可以稍微查一下。轮子也做了相应的单测，因单测较多，这里就不做罗列了，感兴趣的可以[点击查看]()。
+上述的代码每个方法都有详细的注释，其中可能使用到了 Map 的一些 API，看不明白的可以稍微查一下。轮子也做了相应的单测，因单测较多，这里就不做罗列了，感兴趣的可以[点击查看](https://github.com/ardor-zhang/magic-wheel/tree/main/04-publish-subscribe)。
 
 ## 5. 总结
 
@@ -254,7 +254,7 @@ class PublishSubscribe {
 
 文中售楼处的例子来源于 《JavaScript 设计模式与开发实践》第八章发布——订阅模式，感恩前辈的付出，太强了。
 
-[点击可查看本文所有代码]()
+[点击可查看本文所有代码](https://github.com/ardor-zhang/magic-wheel/tree/main/04-publish-subscribe)
 
 
 
