@@ -4,7 +4,7 @@ Function.prototype.myBindPerfect = function(thisArg, ...args1) {
     if (new.target === BindedFn) {
       return fn(...args1, ...args2);
     };
-    return fn.call(thisArg, ...args1, ...args2)
+    return fn.myCall(thisArg, ...args1, ...args2)
   };
 };
 
