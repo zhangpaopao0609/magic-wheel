@@ -1,16 +1,53 @@
 [toc]
 
-# 一起来实现属于你的 call()、apply()、bind() 吧
+# 开玩笑的吧！` call`、`apply`、`bind` 也能手写出来？
 
-在工作中重复造轮子纯粹是浪费生命，但为了学习而尝试造一些 mini 版的轮子也是非常有意义的，而且全面的模拟常用的轮子还可以加深你对这些轮子的理解。
+摘要：在工作中重复造轮子纯粹是浪费生命，但为了学习而尝试造一些 mini 版的轮子也是非常有意义的，而且全面的模拟常用的轮子还可以加深你对这些轮子的理解。
 
-今天，就让我们一起来探索一番 JS 中 `call`， `apply` 以及 `bind` 是如何实现的，然后造出属于我们自己的 `call`， `apply` 以及 `bind` 吧！！
+今天，就让我们一起来探索一番 javascript 中 `call`， `apply` 以及 `bind` 的实现原理，然后造出属于我们自己的 `call`， `apply` 以及 `bind` 吧！！
 
-## 1. 函数 this 的隐式绑定
+## 1. 函数 this 的绑定规则
 
-## 2. call
+要想全面理解并手写 `call` 、`apply` 和 `bind` 方法，那么**深入理解 `this` 是前提**，但 `this` 所含内容绝非三两句可说清楚的，限于篇幅，本文在这里仅简单描述一些函数在执行过程中 this 的绑定对象所遵循的四个规则，如果你已经非常的清除，可以跳过，如果没有，请细细看：
 
-### 2.1  `call` 方法
+1. 默认绑定
+
+   当函数调用类型为：独立函数调用时， 函数的 `this` 为默认绑定，指向全局变量；在严格模式下，`this` 将绑定到 `undefined`。
+
+   如下便为：独立函数调用
+
+   ```js
+   function foo() { console.log(this.a)};
+   foo();
+   ```
+
+2. 隐式绑定
+
+   当函数的 <font color='red'>调用位置</font> 有上下文对象时，或者说函数在被调用时 <font color='red'>被某个对象拥有或者包含时</font>，隐式绑定规则就会把函数调用中的 `this` 绑定到这个上下文对象。
+
+   如下，foo 在调用时 `this` 便被隐式绑定到了 obj 上。
+
+   ```js
+   function foo() { console.log(this.a)};
+   const obj = { a: 2, foo };
+   obj.foo();	// 2
+   ```
+
+   需要特别注意一下<font color='red'>隐式绑定丢失</font>的情况，在这里不做详细说明。
+
+3. 显示绑定
+
+   使用 `call` 、 `apply` 和 `bind` 显示地绑定函数调用时的 `this` 指向，下面篇幅会详述，这里不再赘述。
+
+4. `new` 绑定
+
+   当使用 `new` 调用函数时，会发生 `this` 的指向绑定，但此处发生的 `this` 绑定与函数本身无关，因此这里做过多说明。
+
+> 关于 `this` 的指向问题，我会在下一篇文章中详细的讲述，这里为了更好的说明手写  `call` 、 `apply` 和 `bind`  方法，简单的进行了说明。
+
+## 2. 手写 call
+
+### 2.1  探探 `call` 方法
 
 首先，让我们来回顾一下 `call` 的基本语法和作用，详细可见 [Function.prototype.call()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)。
 
@@ -196,7 +233,7 @@ Function.prototype.myCall = function(thisArg, ...args) {
 
 至此，`myCall` 就基本实现了，但并不算完整，因为还有很多的边界条件未处理，比如严格模式和非严格模式下 `thisArg` 为不同值时进行不同的处理，但就学习而言，已经够够的啦！！
 
-## 3. apply
+## 3. 手写 apply
 
 从使用上来说， `apply()` 和 `call` 非常的相似，仅有一点区别：
 
@@ -219,9 +256,9 @@ Function.prototype.myApply = function(thisArg, args) {	// 仅传递参数不同
 
 因为 `apply` 的第二个参数仅支持数组(或者[类数组对对象](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Indexed_collections#working_with_array-like_objects))，所以其实这里可以做一些拦截处理的。但这里在下就不做了，😄😄😄！！
 
-## 4. bind
+## 4. 手写 bind
 
-### 4.1 `bind` 方法
+### 4.1 探探 `bind` 方法 
 
 首先，还是让我们来回顾一下 `bind` 的基本语法和作用，详细可见 [Function.prototype.bind()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)。
 
@@ -279,13 +316,74 @@ Function.prototype.myBind = function(thisArg, ...args1) {
 
 #### 4.2.2 当返回的绑定函数作为构造函数时忽略 `thisArg`
 
-根据 MDN 的描述，当 `function.bind(thisArg, ...)` 执行后的返回函数（即绑定函数）做为构造函数被调用时（即使用 `new` 操作符调用），
+根据 MDN 的描述，当 `function.bind(thisArg, ...)` 执行后的返回函数（即绑定函数）作为构造函数被调用时（即使用 `new` 操作符调用）。
 
-## 总结
+在 ES6 之前，想要判断一个函数是直接被调用的还是作为构造函数被调用的是需要费一些头脑的。但是 ES6 又为我们提供了一个新的特性：`new.target` 属性，这个属性仅支持在函数内部使用，当函数通过 `new` 命令或 `Reflect.construct()` 调用时，`new.target ` 这个函数，反之，则返回 `undefined`，因此可以使用这个属性来判断函数是直接调用的还是作为构造函数调用的。
 
-异步的函数
+> 不得不说， ES6 真的为我们提供很多便利的特性呀！！
 
-https://medium.com/@ankur_anand/implement-your-own-call-apply-and-bind-method-in-javascript-42cc85dba1b
+如此，仅需要一个简单的分支即可实现想要的功能：
+
+1. 为返回的绑定函数命名，如此，才能在函数内部获取到函数本身
+2. 利用 `new.target` 来判断当前函数是直接调用的还是作为构造函数调用的
+
+```js
+Function.prototype.myBind = function(thisArg, ...args1) {
+  const fn = this;
+  return function BindedFn (...args2) {
+    if (new.target === BindedFn) {
+      return fn(...args1, ...args2);
+    };
+    const fnName = Symbol();
+    thisArg[fnName] = fn;
+    const res = thisArg[fnName](...args1, ...args2);
+    delete thisArg[fnName];
+    return res;
+  };
+};
+```
+
+#### 4.2.3 利用 `call` 方法快速实现 `bind` 方法
+
+由上可知，`call` 方法和 `bind` 方法最大的区别就是：`function.call()` 方法会直接执行 `function` ，而 `function.bind()` 是返回一个新的绑定函数，其它方面均一致（即绑定 `this` 的指向），因此，完全可以使用 `call` 方法来快速实现 `bind` 方法。
+
+1. 当返回的绑定函数作为构造函数调用时，直接执行原函数即可（当然需要传递参数）
+2. 当返回的绑定函数作为普通函数调用时，利用 `call` 方法实现 `this` 指向的绑定以及参数的传递
+
+```js
+Function.prototype.myBindPerfect = function(thisArg, ...args1) {
+  const fn = this;
+  return function BindedFn (...args2) {
+    if (new.target === BindedFn) {
+      return fn(...args1, ...args2);
+    };
+    return fn.call(thisArg, ...args1, ...args2)
+  };
+};
+```
+
+至此，`bind` 方法也基本实现了，但同 `call` 方法一样，还有很多的边界条件未处理， 但同样就学习而言，足矣。
+
+## 5. 总结
+
+点击[查看本文源码](https://github.com/ardor-zhang/magic-wheel/tree/main/05-call-apply-bind)，包括实现的每一个步骤和详细的注释以及每个方法对应的测试。
+
+相信大部分同学都会觉得 `call`、`apply` 和 `bind` 方法是属于内置的吧，恐怕是万万没想到还能直接造出来的。
+
+可当我们探索完后再回首，恐怕会感慨一句，原来是这样的呀！！
+
+写到最后才发现，其实造轮子的过程真的蛮满足的，很多曾经不甚了解的，一一呈现在面前了！！
+
+在这里留下几个有趣的点吧！
+
+1. 在实现  `call`、`apply` 和 `bind` 方法的时候，用到了很多 ES6 提供的新特性，真的为我们提供了很多便利，想想，如果没有这些新特性，身处 ES5 ，我们又该如何实现呢？可能你会说我脱裤子放屁，但是想想还是挺有趣的
+2.  `call`、`apply` 和 `bind` 方法还有很多边界问题没有处理，如果你感兴趣的话，试试看了
+
+参考文献：
+
+1. [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
+2. [ES6 入门教程](https://es6.ruanyifeng.com/#README) 
+3. [Implement your own — call(), apply() and bind() method in JavaScript](https://medium.com/@ankur_anand/implement-your-own-call-apply-and-bind-method-in-javascript-42cc85dba1b)
 
 
 
