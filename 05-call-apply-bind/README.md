@@ -6,6 +6,8 @@
 
 今天，就让我们一起来探索一番 javascript 中 `call`， `apply` 以及 `bind` 的实现原理，然后造出属于我们自己的 `call`， `apply` 以及 `bind` 吧！！
 
+先在这里给出一个大大的结论：**实现 `call` 、`apply`、 `bind` 的关键就是，把<font size='4.6'>显示地 `this` 绑定想方设法的转化成隐式绑定</font>。** 可能你现在并不能立刻理解，不用担心，我们往下看，走起！！
+
 ## 1. 函数 this 的绑定规则
 
 要想全面理解并手写 `call` 、`apply` 和 `bind` 方法，那么**深入理解 `this` 是前提**，但 `this` 所含内容绝非三两句可说清楚的，限于篇幅，本文在这里仅简单描述一些函数在执行过程中 this 的绑定对象所遵循的四个规则，如果你已经非常的清除，可以跳过，如果没有，请细细看：
@@ -366,6 +368,8 @@ Function.prototype.myBindPerfect = function(thisArg, ...args1) {
 
 ## 5. 总结
 
+我想，现在应该已经理解了文章开头的总结了 —— 实现 `call` 、`apply`、 `bind` 的关键就是，把显示地 `this` 绑定想方设法的转化成隐式绑定。
+
 点击[查看本文源码](https://github.com/ardor-zhang/magic-wheel/tree/main/05-call-apply-bind)，包括实现的每一个步骤和详细的注释以及每个方法对应的测试。
 
 相信大部分同学都会觉得 `call`、`apply` 和 `bind` 方法是属于内置的吧，恐怕是万万没想到还能直接造出来的。
@@ -385,15 +389,9 @@ Function.prototype.myBindPerfect = function(thisArg, ...args1) {
 2. [ES6 入门教程](https://es6.ruanyifeng.com/#README) 
 3. [Implement your own — call(), apply() and bind() method in JavaScript](https://medium.com/@ankur_anand/implement-your-own-call-apply-and-bind-method-in-javascript-42cc85dba1b)
 
-
-
-
-
-
-
-
-
-
+<div>
+	<img src='./img/call-apply-bind.jpeg' />
+</div>
 
 
 

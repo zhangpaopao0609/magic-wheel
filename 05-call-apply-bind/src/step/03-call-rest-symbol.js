@@ -13,3 +13,11 @@ function showUserName(title, separator) {
 };
 
 showUserName.myCall(user, '姓名', '--');  // 张跑跑
+
+Function.prototype.myCall = function(thisArg, ...args) {
+  const fnName = Symbol();
+  thisArg[fnName] = this;
+  const res = thisArg[fnName](...args);
+  delete thisArg[fnName];
+  return res;
+};
