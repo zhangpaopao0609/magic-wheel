@@ -246,6 +246,7 @@ function.bind(thisArg, arg1, arg2, ...)
 1.  `bind` 方法将创建并返回一个新的函数，新函数称为绑定函数（bound function），并且此绑定函数包裹着原始函数
 2. 在执行时，会 <font color='red'>**显示地**</font> 将 <font color='red'>原始函数 </font>内部的 `this` 指向了 `thisArg`
 3. 除 `thisArg` 外的所有剩余参数将全部传递给 `function` 
+4. 如果使用 `new` 运算符调用生成的绑定函数 ，则忽略 `thisArg`
 
 **一般情况下，可以认为 `bind`  方法与 `call` 方法几乎一致，只是 `function.call(thisArg, ...)` 会立即执行 `function` 函数，而 `function.bind(thisArg, ...)` 并不会立即执行，而是返回一个新的绑定函数。**
 
@@ -268,7 +269,7 @@ Function.prototype.myBind = function(thisArg, ...args1) {
   return function(...args2) {
     const fnName = Symbol();
     thisArg[fnName] = fn;
-    // 1. 调用 `bind` 方法传递的参数 args1, 2. 执行返回的绑定函数时传递的参数 args2
+    // 1. args1：调用 `bind` 方法传递的参数 , 2. args2：执行返回的绑定函数时传递的参数 
     const res = thisArg[fnName](...args1, ...args2);
     delete thisArg[fnName];
     return res;
@@ -276,9 +277,9 @@ Function.prototype.myBind = function(thisArg, ...args1) {
 };
 ```
 
+#### 4.2.2 当返回的绑定函数作为构造函数时忽略 `thisArg`
 
-
-#### 4.2.1 基础实现
+根据 MDN 的描述，当 `function.bind(thisArg, ...)` 执行后的返回函数（即绑定函数）做为构造函数被调用时（即使用 `new` 操作符调用），
 
 ## 总结
 
