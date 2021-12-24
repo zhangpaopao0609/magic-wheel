@@ -26,11 +26,16 @@ function.call(thisArg, arg1, arg2, ...)
 
 - `arg1, arg2, ...`
 
+  可选参数
+
+返回值：**在 <font color='red'>指定的 `this` 值</font> 和 所传递的参数下 调用此函数的返回结果**
+
 `function.call(thisArg, ...)` 需要注意的是：
 
 1. `function` 函数将会 <font color='red'>立即执行</font>
 2. 在执行时，会 <font color='red'>**显示地**</font> 将函数内部的 `this` 指向了 `thisArg`
 3. 除 `thisArg` 外的所有剩余参数将全部传递给 `function` 
+4. 返回 `function` 函数执行后的结果（当然是在上述 2， 3 情形下）
 
 ### 2.2 探究和实现 `call` 方法
 
@@ -138,7 +143,7 @@ showUserName.myCall(user);
 ```js
 Function.prototype.myCall = function(thisArg, ...args) {
   thisArg.fnName = this;
-  thisArg.fnName(...args);
+  return thisArg.fnName(...args);
 };
 ```
 
@@ -159,8 +164,9 @@ Function.prototype.myCall = function(thisArg, ...args) {
 ```js
 Function.prototype.myCall = function(thisArg, ...args) {
   thisArg.fnName = this;
-  thisArg.fnName(...args);
+  const res = thisArg.fnName(...args);
   delete thisArg.fnName;
+  return res;
 };
 ```
 
@@ -178,8 +184,9 @@ Function.prototype.myCall = function(thisArg, ...args) {
    Function.prototype.myCall = function(thisArg, ...args) {
      const fnName = Symbol();	// 将是独一无二的值
      thisArg[fnName] = this;
-     thisArg[fnName](...args);
+     const res = thisArg[fnName](...args);
      delete thisArg[fnName];
+     return res;
    };
    ```
 
@@ -204,8 +211,9 @@ Function.prototype.myCall = function(thisArg, ...args) {
 Function.prototype.myApply = function(thisArg, args) {	// 仅传递参数不同
   const fnName = Symbol();
   thisArg[fnName] = this;
-  thisArg[fnName](...args);
+  const res = thisArg[fnName](...args);
   delete thisArg[fnName];
+  return res;
 };
 ```
 
@@ -215,11 +223,62 @@ Function.prototype.myApply = function(thisArg, args) {	// 仅传递参数不同
 
 ### 4.1 `bind` 方法
 
-首先，一起来看看 MDN 对 `bind` 方法的定义。
+首先，还是让我们来回顾一下 `bind` 的基本语法和作用，详细可见 [Function.prototype.bind()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)。
+
+```js
+function.bind(thisArg, arg1, arg2, ...)
+```
+
+参数：
+
+- `thisArg`
+
+  可选参数。 `function.bind(thisArg, ...)`  执行时会生成一个包裹着 `function(...)` 的绑定函数，并且将 `function(...)` 的 `this` 指向 `thisArg`。如果使用 `new` 运算符调用这个生成的绑定函数 ，则忽略 `thisArg`。
+
+- `arg1, arg2, ...` 
+
+  可选参数
+
+返回值：**具有 <font color='red'>指定 `this` 指向</font> 和 初始参数（如果提供）的给定函数的副本**
+
+`function.bind(thisArg, ...)` 需要注意的是：
+
+1.  `bind` 方法将创建并返回一个新的函数，新函数称为绑定函数（bound function），并且此绑定函数包裹着原始函数
+2. 在执行时，会 <font color='red'>**显示地**</font> 将 <font color='red'>原始函数 </font>内部的 `this` 指向了 `thisArg`
+3. 除 `thisArg` 外的所有剩余参数将全部传递给 `function` 
+
+**一般情况下，可以认为 `bind`  方法与 `call` 方法几乎一致，只是 `function.call(thisArg, ...)` 会立即执行 `function` 函数，而 `function.bind(thisArg, ...)` 并不会立即执行，而是返回一个新的绑定函数。**
+
+### 4.2 实现 bind 方法
+
+#### 4.2.1 基础实现
+
+有了实现 `call` 方法的引导，实现一个基础版的 `bind` 并不需要太多纠结。
+
+1. 返回一个新的绑定函数
+2. 要在绑定函数中执行 `function`，因此需要用到 <font color='red'>闭包的机制</font> 来使得可以在返回的新函数中获取到 `function`
+3. 在新函数中执行与 `call` 方法几乎完全相同的过程
+   - 将 `function ` 的 `this` 指向 `thisArg`
+   - 将调用 `bind` 方法传递的参数传递给 `thisArg[fnName]`
+   - 同时将执行 <font color='red'>返回的绑定函数</font> 时传递的参数传递给 `thisArg[fnName]`
+
+```js
+Function.prototype.myBind = function(thisArg, ...args1) {
+  const fn = this;
+  return function(...args2) {
+    const fnName = Symbol();
+    thisArg[fnName] = fn;
+    // 1. 调用 `bind` 方法传递的参数 args1, 2. 执行返回的绑定函数时传递的参数 args2
+    const res = thisArg[fnName](...args1, ...args2);
+    delete thisArg[fnName];
+    return res;
+  }
+};
+```
 
 
 
-
+#### 4.2.1 基础实现
 
 ## 总结
 

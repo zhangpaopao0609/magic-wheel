@@ -1,8 +1,9 @@
 Function.prototype.myCall = function(thisArg, ...args) {
   const fnName = Symbol();
   thisArg[fnName] = this;
-  thisArg[fnName](...args);
+  const res = thisArg[fnName](...args);
   delete thisArg[fnName];
+  return res;
 };
 
 const user = { name: '张跑跑' };
