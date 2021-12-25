@@ -104,29 +104,27 @@ function.call(thisArg, arg1, arg2, ...)
 
 先让我们一起来看看下面这两段代码：
 
-1. 使用 `call` 来显示地绑定 `showUserName_` 在被调用时 `this` 指向 `user_`，最终打印结果为 `hello: 张跑跑`
+1. 使用 `call` 来显示地绑定 `showUserName` 在被调用时 `this` 指向 `user`，最终打印结果为 `hello: 张跑跑`
 
 ```js
-const user_ = { name: '张跑跑' };
+const user = { name: '张跑跑' };
 
-function showUserName_(title) {
+function showUserName(title) {
   console.log(title, this.name);
 };
-// 使用 call 来显示地绑定 showUserName_ 在被调用时 this 的指向
-showUserName_.call(user_, 'hello:');  // 打印结果： hello: 张跑跑
+// 使用 call 来显示地绑定 showUserName 在被调用时 this 的指向
+showUserName.call(user, 'hello:');  // 打印结果： hello: 张跑跑
 ```
 
-2. 将 `showUserName` 函数作为 `user` 的属性值，<font color='red'>利用隐式绑定规则同样实现</font> 了 `showUserName` 在被调用时指向 `user`,  最终打印结果同样为 `hello: 张跑跑`
+2. 将 `showUserName` 函数作为 `user_fnName` 的属性值，<font color='red'>利用隐式绑定规则同样实现</font> 了 `showUserName` 在被调用时指向 `user_fnName`,  最终打印结果同样为 `hello: 张跑跑`
 
 ```js
-const user = {
+const user_fnName = {
   name: '张跑跑',
-  fnName: function showUserName(title) {
-    console.log(title, this.name);
-  },
+  fnName: showUserName,
 };
 // 利用隐式绑定规则来实现 showUserName 在被调用时 this 的绑定
-user.fnName('hello:');  // 打印结果： hello: 张跑跑
+user_fnName.fnName('hello:');  // 打印结果： hello: 张跑跑
 ```
 
 不知道你看完这两段代码后有没有什么奇思妙想哈！
@@ -221,7 +219,7 @@ myCall(showUserName, user, 'hello:');	// hello: 张跑跑
 > - rest 参数（形式为 `...变量名`），用于获取函数的多余参数，rest 参数搭配的变量是一个数组，该变量将多余的参数放入数组中。
 > - 扩展运算符 `...`， 它好比 rest 参数的逆运算，将一个数组转为用逗号分隔的参数序列。
 
-#### 2.2.3 保证唯一性
+#### 2.2.3 唯一性保证
 
 因为 `thisArg` 对象中可能存在 `fnName` 这个属性，所以 2.2.2 的实现并不鲁棒。那就需要避免这样的情况出现，需要一个**唯一的属性名**。
 
@@ -239,7 +237,7 @@ function myCall(fn, thisArg, ...args) {
 
 #### 2.2.4 挂载到 `Function.prototype`
 
-在使用 `call` 方法时，我们并不是像 `myCall` 方法这样作为独立函数调用的，而是作为函数的方法执行的，如 `showUserName_.call(user_, 'hello:');` ，因此，我们的 `myCall` 也需如此。
+在使用 `call` 方法时，我们并不是像 `myCall` 方法这样作为独立函数调用的，而是作为函数的方法执行的，如 `showUserName.call(user, 'hello:');` ，因此，我们的 `myCall` 也需如此。
 
 那要如何实现呢？这就需要谈谈 js 的原型链和委托机制了，这属于 js 非常核心有趣的知识点了，下面做简单的说明，这里不做过多赘述。
 
@@ -265,7 +263,7 @@ Function.prototype.myCall = function(thisArg, ...args) {
 
 2. `thisArg[fnName] = this;`
 
-   此处需要理解的是 `this`，这个 `this` 是个啥？<font color='red'> 同样因为隐式绑定规则的缘故，这里的 `this` 将指向调用 `myCall` 方法的函数 </font>，例如`showUserName_.call(user_, 'hello:');`，那么这个 `this` 就是 `showUserName_` 函数。
+   此处需要理解的是 `this`，这个 `this` 是个啥？<font color='red'> 同样因为隐式绑定规则的缘故，这里的 `this` 将指向调用 `myCall` 方法的函数 </font>，例如`showUserName.call(user, 'hello:');`，那么这个 `this` 就是 `showUserName` 函数。
 
 其它的便与普通的 `myCall` 方法无异了。
 
@@ -410,7 +408,7 @@ Function.prototype.myBindPerfect = function(thisArg, ...args1) {
 
 我想，现在应该已经理解了文章开头的总结了 —— 实现 `call` 、`apply`、 `bind` 的关键就是，把显示地 `this` 绑定想方设法的转化成隐式绑定。
 
-点击[查看本文源码](https://github.com/ardor-zhang/magic-wheel/tree/main/05-call-apply-bind)，包括实现的每一个步骤和详细的注释以及每个方法对应的测试。
+点击[查看本文源码](https://github.com/ardor-zhang/magic-wheel/tree/main/05-call-apply-bind)，包括实现的每一个步骤和详细的注释以及每个方法对应的测试。[点击可查看实现步骤](https://github.com/Ardor-Zhang/magic-wheel/tree/main/05-call-apply-bind/src/step)
 
 相信大部分同学都会觉得 `call`、`apply` 和 `bind` 方法是属于内置的吧，恐怕是万万没想到还能直接造出来的。
 
@@ -432,60 +430,3 @@ Function.prototype.myBindPerfect = function(thisArg, ...args1) {
 <div>
 	<img src='./img/call-apply-bind.jpeg' />
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
