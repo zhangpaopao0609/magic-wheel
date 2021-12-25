@@ -10,6 +10,6 @@ function getName(title, separator) {
 
 test('myApply 显示绑定函数 this', () => {
   const res = getName.myApply(obj, ['张跑跑', '----']);
-  const expectRes = '张跑跑----paopao';
+  const expectRes = getName.apply(obj, ['张跑跑', '----']);
   expect(res).toEqual(expectRes);
 });

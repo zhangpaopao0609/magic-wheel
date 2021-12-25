@@ -10,6 +10,6 @@ function getName(title, separator) {
 
 test('myCall 显示绑定函数 this', () => {
   const res = getName.myCall(obj, '张跑跑', '----');
-  const expectRes = '张跑跑----paopao';
+  const expectRes = getName.call(obj, '张跑跑', '----');
   expect(res).toEqual(expectRes);
 });
