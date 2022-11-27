@@ -1,0 +1,15 @@
+.image-title {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.comment-alg4-book {
+  font-size: 12px;
+  float: right;
+  margin-top: 2px;
+}
+
+.redBold {
+  color: red;
+  font-weight: bold;
+}

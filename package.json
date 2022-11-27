@@ -2,15 +2,34 @@
   "name": "magic-wheel",
   "version": "1.0.0",
   "description": "magic-wheel",
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:serve": "vitepress serve docs",
+    "prepare": "husky install"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/arrow-zb/magic-wheel.git"
+    "url": "git+https://github.com/zhangpaopao0609/magic-wheel.git"
   },
   "keywords": [],
   "author": "zhangpaopao",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/arrow-zb/magic-wheel/issues"
+    "url": "https://github.com/zhangpaopao0609/magic-wheel/issues"
   },
-  "homepage": "https://github.com/arrow-zb/magic-wheel#readme"
+  "homepage": "https://github.com/zhangpaopao0609/magic-wheel#readme",
+  "devDependencies": {
+    "@algolia/client-search": "^4.14.2",
+    "@commitlint/cli": "^17.0.3",
+    "@commitlint/config-conventional": "^17.0.3",
+    "husky": "^8.0.0",
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.7.1",
+    "vitepress": "^1.0.0-alpha.4",
+    "vue": "^3.2.37"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
+  }
 }
